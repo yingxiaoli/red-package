@@ -35,6 +35,17 @@
   gap: 0.5rem;
 }
 
+.wallet-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.wallet-identity .ens {
+  font-weight: 600;
+  color: #f43f5e;
+}
+
 .connector-buttons {
   display: flex;
   flex-wrap: wrap;

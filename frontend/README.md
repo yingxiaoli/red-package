@@ -10,7 +10,7 @@
    npm install
    ```
 
-2. 复制并填写环境变量，设置合约地址与 RPC：
+2. 复制并填写环境变量，设置合约地址与 RPC（如果需要解析 ENS，可额外配置主网 RPC）：
 
    ```bash
    cp .env.example .env
@@ -18,6 +18,7 @@
    # VITE_RED_PACKET_ADDRESS=0x...
    # VITE_RPC_URL=http://127.0.0.1:8545
    # VITE_CHAIN_ID=31337
+   # VITE_MAINNET_RPC_URL=https://rpc.ankr.com/eth
    ```
 
 3. 启动本地开发服务器：

@@ -1,10 +1,11 @@
 import { QueryClient } from '@tanstack/react-query'
 import { defineChain, http } from 'viem'
+import type { Chain } from 'viem/chains'
 import { createConfig } from 'wagmi'
 import { metaMask } from 'wagmi/connectors'
-import { hardhat } from 'wagmi/chains'
+import { hardhat, mainnet } from 'wagmi/chains'
 
-import { preferredChainId, rpcUrl } from './contract'
+import { mainnetRpcUrl, preferredChainId, rpcUrl } from './contract'
 
 export const appChain =
   preferredChainId === hardhat.id
@@ -27,13 +28,22 @@ export const appChain =
         },
       })
 
+const chains: [typeof appChain, ...Chain[]] =
+  appChain.id === mainnet.id ? [appChain] : [appChain, mainnet]
+
+const transports: Record<number, ReturnType<typeof http>> = {
+  [appChain.id]: http(rpcUrl),
+}
+
+if (appChain.id !== mainnet.id) {
+  transports[mainnet.id] = http(mainnetRpcUrl)
+}
+
 export const wagmiConfig = createConfig({
-  chains: [appChain],
+  chains,
   connectors: [metaMask()],
   ssr: false,
-  transports: {
-    [appChain.id]: http(rpcUrl),
-  },
+  transports,
 })
 
 export const queryClient = new QueryClient()

@@ -1,9 +1,11 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { BaseError } from 'viem'
 import type { Connector } from 'wagmi'
-import { useAccount, useConnect, useDisconnect, useSwitchChain } from 'wagmi'
+import { useAccount, useConnect, useDisconnect, useEnsName, useSwitchChain } from 'wagmi'
+import { mainnet } from 'wagmi/chains'
 
 import { appChain } from '../lib/wagmi'
+import { mainnetClient } from '../lib/ens'
 
 const formatAddress = (value?: `0x${string}`) =>
   value ? `${value.slice(0, 6)}...${value.slice(-4)}` : ''
@@ -13,6 +15,38 @@ export const WalletControls = () => {
   const { connectors, connectAsync, status: connectStatus, error } = useConnect()
   const { disconnect } = useDisconnect()
   const { switchChain, isPending: isSwitching, error: switchError } = useSwitchChain()
+  const { data: ensName } = useEnsName({
+    address,
+    chainId: mainnet.id,
+    query: { enabled: Boolean(address) },
+  })
+  const [resolvedEns, setResolvedEns] = useState<string | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    const fetchEns = async () => {
+      if (!address) {
+        setResolvedEns(null)
+        return
+      }
+      try {
+        const name = await mainnetClient.getEnsName({ address })
+        if (!cancelled) {
+          setResolvedEns(name ?? null)
+        }
+      } catch {
+        if (!cancelled) {
+          setResolvedEns(null)
+        }
+      }
+    }
+    void fetchEns()
+    return () => {
+      cancelled = true
+    }
+  }, [address])
+
+  const displayEns = resolvedEns ?? ensName ?? null
 
   const hasConnectors = useMemo(() => connectors.length > 0, [connectors])
   const isWrongNetwork = Boolean(chainId && chainId !== appChain.id)
@@ -40,7 +74,10 @@ export const WalletControls = () => {
         {address ? (
           <div className="wallet-status">
             <span className="pill success">已连接</span>
-            <span className="address">{formatAddress(address)}</span>
+            <div className="wallet-identity">
+              {displayEns && <span className="ens">{displayEns}</span>}
+              <span className="address">{formatAddress(address)}</span>
+            </div>
           </div>
         ) : (
           <span className="pill">未连接</span>

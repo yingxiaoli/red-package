@@ -8,7 +8,8 @@ export const redPacketAddress = (redPacketAddressFromEnv || fallbackAddress) as 
 
 export const preferredChainId = Number(import.meta.env.VITE_CHAIN_ID ?? 31337)
 export const rpcUrl = import.meta.env.VITE_RPC_URL ?? 'http://127.0.0.1:8545'
-
+export const mainnetRpcUrl = import.meta.env.VITE_MAINNET_RPC_URL ?? 'https://rpc.ankr.com/eth'
+console.log('mainnetRpcUrl',mainnetRpcUrl)
 export const redPacketAbi = [
   {
     type: 'event',
