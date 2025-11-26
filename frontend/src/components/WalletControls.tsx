@@ -57,7 +57,7 @@ export const WalletControls = () => {
                 >
                   {accountStatus === 'connected' ? `切换到 ${connector.name}` : connector.name}
                 </button>
-                {!connector.ready && (
+                {!connector.ready && !address && (
                   <p className="muted tiny">
                     尚未检测到 {connector.name}，请确认扩展已解锁后再尝试连接。
                   </p>
@@ -76,7 +76,7 @@ export const WalletControls = () => {
 
         {isWrongNetwork && (
           <div className="warning">
-            <p>当前网络不正确，请切换到本地链 ({appChain.name}).</p>
+            <p>当前网络不正确，请切换到指定网络 ({appChain.name})。</p>
             <button type="button" onClick={handleSwitchNetwork} disabled={isBusy}>
               自动切换
             </button>
